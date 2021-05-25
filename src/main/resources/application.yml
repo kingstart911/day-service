@@ -1,0 +1,54 @@
+  spring:
+    rabbitmq:
+      host: 192.168.138.166
+      port: 5672
+      username: guest
+      password: guest
+      publisher-returns: true
+      listener:
+        simple:
+          acknowledge-mode: manual
+          concurrency: 1
+          max-concurrency: 1
+          retry:
+            enabled: true
+
+    redis:
+      host: 127.0.0.1
+      port: 6379
+#      password: 123456
+      database: 1
+      pool:
+        maxActive: 600
+        maxIdle: 30
+        maxWait: 3000
+        testOnBorrow: true
+    datasource:
+      username: root
+      password: 123456
+      jdbc-url: jdbc:mysql://localhost:3306/chenyapeng
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: ${spring.datasource.jdbc-url}?user=${spring.datasource.username}&password=${spring.datasource.password}&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      hikari:
+      maximum-pool-size: 10
+    jpa:
+      database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+      show-sql: true
+
+
+
+      ## 使用topic+routeKey机制，实现同一个主题可以被多个消费者订阅，但不能被多个环境订阅的功能，每一个环境routeKey唯一
+      eapcloud:
+        amqp:
+          #routekey 前缀
+          route-key-suffix: ${spring.profiles}${eapcloud.developer:}
+          #exchange模式
+          exchange-mode: topic #topic, fanout, direct, header
+          connection-factory:
+            #主机
+            host: 192.168.138.166
+            #用户名
+            username: guest
+            #用户密码
+            password: guest
+            virtualhost: /
